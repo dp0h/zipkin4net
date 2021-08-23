@@ -78,6 +78,20 @@ namespace zipkin4net
         }
 
         /// <summary>
+        /// Creates a trace with explicitly set traceId
+        /// </summary>
+        public static Trace Create(long traceId, long traceIdHigh = 0, long? parentSpanId = null, long? spanId = null)
+        {
+            return new Trace(traceId, traceIdHigh, parentSpanId, spanId ?? RandomUtils.NextLong(), true);
+        }
+
+        private Trace(long traceId, long traceIdHigh, long? parentSpanId, long spanId, bool isSampled)
+        {
+            CurrentSpan = new SpanState(traceIdHigh: traceIdHigh, traceId: traceId, parentSpanId: parentSpanId, spanId: spanId, isSampled: isSampled, isDebug: false);
+            CorrelationId = NumberUtils.LongToGuid(traceId);
+        }
+
+        /// <summary>
         /// Creates a derived trace which inherits from
         /// the trace id and flags.
         /// It has a new span id and the parent id set to the current span id.
